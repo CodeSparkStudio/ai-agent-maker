@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+export async function GET(req:Request){const token=req.headers.get('sb-access-token')||'';const {data:{user},error}=await supabaseAdmin.auth.getUser(token);if(error||!user)return NextResponse.json({error:'Unauthorized'},{status:401});const {data}=await supabaseAdmin.from('profiles').select('subscription_status,daily_messages_used,daily_reset_at').eq('user_id',user.id).maybeSingle();const profile=data||{subscription_status:'free',daily_messages_used:0,daily_reset_at:null};return NextResponse.json({profile});}

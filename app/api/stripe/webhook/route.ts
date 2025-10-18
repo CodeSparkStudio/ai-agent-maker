@@ -1,0 +1,4 @@
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+export async function POST(req:Request){const sig=(req.headers.get('stripe-signature')||'') as string;const secret=process.env.STRIPE_WEBHOOK_SECRET as string;const raw=await req.text();try{const stripe=new Stripe(process.env.STRIPE_SECRET_KEY as string,{apiVersion:'2024-06-20'});const event=stripe.webhooks.constructEvent(raw,sig,secret);if(event.type==='checkout.session.completed'){const session=event.data.object as Stripe.Checkout.Session;const userId=session.client_reference_id;if(userId){await supabaseAdmin.from('profiles').upsert({user_id:userId,subscription_status:'pro',daily_messages_used:0,daily_reset_at:new Date().toISOString().slice(0,10)},{onConflict:'user_id'});}}return NextResponse.json({received:true});}catch(err:any){return NextResponse.json({error:err.message},{status:400});}}

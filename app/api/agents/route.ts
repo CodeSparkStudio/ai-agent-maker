@@ -1,0 +1,6 @@
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { buildSystemPrompt } from '@/lib/prompt';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+const bodySchema=z.object({name:z.string().min(2),persona:z.string().min(10),tools:z.object({web:z.boolean().optional(),memory:z.boolean().optional()}).optional()});
+export async function POST(req:Request){const token=req.headers.get('sb-access-token')||'';const {data:{user},error}=await supabaseAdmin.auth.getUser(token);if(error||!user)return NextResponse.json({error:'Unauthorized'},{status:401});const json=await req.json();const parsed=bodySchema.safeParse(json);if(!parsed.success)return NextResponse.json({error:'Invalid payload'},{status:400});const {data:profile}=await supabaseAdmin.from('profiles').select('subscription_status').eq('user_id',user.id).maybeSingle();if(!profile||profile.subscription_status==='free'){const {count}=await supabaseAdmin.from('agents').select('id',{count:'exact',head:true}).eq('user_id',user.id);if((count||0)>=1)return NextResponse.json({error:'Free plan allows 1 agent. Upgrade on Pricing.'},{status:402});}const {name,persona,tools}=parsed.data;const systemPrompt=buildSystemPrompt(name,persona,tools);await supabaseAdmin.from('agents').insert({user_id:user.id,name,persona,tools});return NextResponse.json({systemPrompt});}

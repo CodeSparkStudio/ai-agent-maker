@@ -1,0 +1,2 @@
+/** @type {import('tailwindcss').Config} */
+module.exports={content:["./app/**/*.{ts,tsx}","./components/**/*.{ts,tsx}","./lib/**/*.{ts,tsx}"],theme:{extend:{colors:{brand:{500:"#567DFF",600:"#3F60E6"},accent:{500:"#9B5CFF"}},boxShadow:{glow:"0 0 40px rgba(86,125,255,0.35)"}}},plugins:[]};

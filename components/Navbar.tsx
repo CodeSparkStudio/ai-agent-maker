@@ -1,0 +1,5 @@
+'use client';
+import Link from 'next/link';
+import { useEffect,useState } from 'react';
+import { supabaseBrowser } from '@/lib/supabase-browser';
+export default function Navbar(){const [user,setUser]=useState<any>(null);useEffect(()=>{const sb=supabaseBrowser();sb.auth.getUser().then(({data})=>setUser(data.user||null));const {data:sub}=sb.auth.onAuthStateChange((_e,session)=>setUser(session?.user||null));return()=>sub.subscription.unsubscribe();},[]);const signOut=async()=>{await supabaseBrowser().auth.signOut();window.location.href='/';};return(<nav className="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0"><div className="max-w-5xl mx-auto flex items-center justify-between p-4"><Link href="/" className="font-bold text-brand-500">AI Agent Maker</Link><div className="flex items-center gap-4 text-sm"><Link href="/pricing">Pricing</Link>{user?(<><Link href="/dashboard">Dashboard</Link><button onClick={signOut} className="rounded bg-slate-800 px-3 py-1">Sign out</button></>):(<Link href="/login" className="rounded bg-brand-600 px-3 py-1">Login</Link>)}</div></div></nav>);}

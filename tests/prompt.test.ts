@@ -1,0 +1,3 @@
+import { describe,it,expect } from 'vitest';
+import { buildSystemPrompt } from '../lib/prompt';
+describe('buildSystemPrompt',()=>{it('includes name and persona',()=>{const out=buildSystemPrompt('Sales Coach','Help users get clients fast.');expect(out).toContain('Sales Coach');expect(out).toContain('Help users get clients fast.');});it('lists disabled tools by default',()=>{const out=buildSystemPrompt('X','Y');expect(out).toContain('- Web: disabled');expect(out).toContain('- Memory: disabled');});it('enables tool descriptions when toggled',()=>{const out=buildSystemPrompt('X','Y',{web:true,memory:true});expect(out).toContain('Web: You can suggest web lookups');expect(out).toContain('Memory: summarize and recall');});});

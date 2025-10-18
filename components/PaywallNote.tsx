@@ -1,0 +1,2 @@
+'use client';
+export default function PaywallNote({subscribed}:{subscribed:boolean}){if(subscribed)return null;return(<div className="rounded-xl border border-yellow-600/40 bg-yellow-500/10 p-3 text-sm text-yellow-200">Free tier: 1 agent & 5 messages/day. <a href="/pricing" className="underline">Upgrade for $9.99/mo</a>.</div>);}
